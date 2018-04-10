@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+const fs = require('fs');
+
+const packStr = fs.readFileSync('./package.json', 'utf-8');
+const pack = JSON.parse(packStr);
+
+console.log(pack.version);
