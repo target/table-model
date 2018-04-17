@@ -5,4 +5,5 @@ deploy:
     branch: master
   provider: npm
   email: "GameDevFox@gmail.com"
-  api_key "$NPM_TOKEN"
+  api_key: "$NPM_TOKEN"
+  skip_cleanup: true
