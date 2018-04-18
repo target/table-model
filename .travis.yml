@@ -1,0 +1,9 @@
+language: node_js
+
+deploy:
+  on:
+    branch: master
+  provider: npm
+  email: "GameDevFox@gmail.com"
+  api_key: "$NPM_TOKEN"
+  skip_cleanup: true
