@@ -1,4 +1,4 @@
-# TableModel
+# TableModel - [Live Demo](https://target.github.io/table-model/)
 
 TableModel is an in-memory data model that automatically calculates your data based on provided equations.
 It keeps track of dependencies between data and equations and automatically updates cells quickly and efficiently.
@@ -8,7 +8,7 @@ additional features such as predicting which cells in your table are going to be
 
 ### Preview: AgGrid powered by TableModel ([AgGrid not included](https://www.ag-grid.com/))
 
-![Alt Text](https://github.com/target/table-model/blob/master/docs/table-model-demo.gif?raw=true)
+![TableModel Animated GIF](https://github.com/target/table-model/blob/master/docs/table-model-demo.gif?raw=true)
 
 ## Getting Started
 
