@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const initAgGridData = (agGridApi, tableModelUpdate) => {
+export const initAgGridData = (agGridApi, tableModelUpdate) => {
   const rowData = _.map(tableModelUpdate, (cells, rowId) => {
     const gridRow = Object.assign({}, cells);
     gridRow.id = parseInt(rowId, 10);
@@ -10,7 +10,7 @@ const initAgGridData = (agGridApi, tableModelUpdate) => {
   agGridApi.setRowData(rowData);
 };
 
-const updateAgGrid = (agGridApi, tableModelUpdate) => {
+export const updateAgGrid = (agGridApi, tableModelUpdate) => {
   _.each(tableModelUpdate, (rowUpdates, rowId) => {
     const node = agGridApi.getRowNode(rowId);
 
@@ -26,7 +26,7 @@ const noValueChange = params => {
   return newValue === oldValue;
 };
 
-const updateTable = (table, agGridUpdate) => {
+export const updateTable = (table, agGridUpdate) => {
   const rowId = agGridUpdate.node.id;
   const cell = agGridUpdate.colDef.field;
   const newValue = parseFloat(agGridUpdate.newValue);
@@ -40,4 +40,46 @@ const updateTable = (table, agGridUpdate) => {
   table.update(update);
 };
 
-export { initAgGridData, updateAgGrid, updateTable };
+export const buildHighlighter = tableModel => {
+  let affectedRows = null;
+
+  const begin = params => {
+    const rowId = params.data.id;
+    const cellName = params.colDef.field;
+    const api = params.api;
+
+    const update = {};
+    update[rowId] = {};
+    update[rowId][cellName] = null;
+
+    affectedRows = tableModel.willAffect(update);
+
+    const rowNodes = [];
+    _.each(affectedRows, (affectedCells, rowId) => {
+      const node = params.api.getRowNode(rowId);
+
+      if(node) {
+        const data = node.data;
+        data.affectedCells = affectedCells;
+        rowNodes.push(node);
+      }
+    });
+    api.refreshCells({ rowNodes, force: true });
+  };
+
+  const end = params => {
+    const rowNodes = [];
+    const api = params.api;
+    _.each(affectedRows, (affectedCells, rowId) => {
+      const node = params.api.getRowNode(rowId);
+      if(node) {
+        delete node.data.affectedCells;
+        rowNodes.push(node);
+      }
+    });
+    api.refreshCells({ rowNodes, force: true });
+    affectedRows = null;
+  };
+
+  return { begin, end };
+};
