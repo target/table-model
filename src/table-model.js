@@ -6,7 +6,7 @@ import Transaction from './transaction';
 import helperFns from './helper-functions';
 import validate from './validation';
 
-const TableModel = ({ rowDefs, helpers, listener, preLink }) => {
+const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
   // Helpers
   const allHelpers = _.merge({}, helperFns, helpers || {});
 
@@ -140,29 +140,41 @@ const TableModel = ({ rowDefs, helpers, listener, preLink }) => {
     Object.assign(preLinkData, plData);
   }
 
-  // Link and Fire Initial Update
-  const initTrx = Transaction({ init: true });
-  _.each(rows, row => {
-    _.each(row, (cell, cellName) => {
-      if(cellName === 'meta')
-        return;
+  const initColumn = columnList => {
+      const initTrx = Transaction({ init: true });
+      if(columnList && columnList.length > 0) {
+        _.each(rows, row => {
+          _.each(columnList, column => {
+            const cell = row[column];
+            if(cell)
+              cell.get(initTrx);
+          });
+        });
+      } else {
+        _.each(rows, row => {
+          _.each(row, (cell, cellName) => {
+            if(cellName === 'meta')
+              return;
 
-      cell.get(initTrx);
-    });
-  });
+            cell.get(initTrx);
+          });
+        });
+      }
+      const { updates } = initTrx;
+      const mappedUpdates = mapUpdates(updates);
+      fireUpdate(mappedUpdates);
+    };
 
-  const { updates } = initTrx;
-
-  // Map updates to rows
-  const mappedUpdates = mapUpdates(updates);
-  fireUpdate(mappedUpdates);
+    // Link and Fire Initial Update
+    initColumn(columnList);
 
   return {
     listen,
     rows,
     update,
     willAffect,
-    preLinkData
+    preLinkData,
+    initColumn
   };
 };
 
