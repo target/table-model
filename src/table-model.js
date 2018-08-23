@@ -141,32 +141,32 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
   }
 
   const initColumn = columnList => {
-      const initTrx = Transaction({ init: true });
-      if(columnList && columnList.length > 0) {
-        _.each(rows, row => {
-          _.each(columnList, column => {
-            const cell = row[column];
-            if(cell)
-              cell.get(initTrx);
-          });
-        });
-      } else {
-        _.each(rows, row => {
-          _.each(row, (cell, cellName) => {
-            if(cellName === 'meta')
-              return;
-
+    const initTrx = Transaction({ init: true });
+    if(columnList && columnList.length > 0) {
+      _.each(rows, row => {
+        _.each(columnList, column => {
+          const cell = row[column];
+          if(cell)
             cell.get(initTrx);
-          });
         });
-      }
-      const { updates } = initTrx;
-      const mappedUpdates = mapUpdates(updates);
-      fireUpdate(mappedUpdates);
-    };
+      });
+    } else {
+      _.each(rows, row => {
+        _.each(row, (cell, cellName) => {
+          if(cellName === 'meta')
+            return;
 
-    // Link and Fire Initial Update
-    initColumn(columnList);
+          cell.get(initTrx);
+        });
+      });
+    }
+    const { updates } = initTrx;
+    const mappedUpdates = mapUpdates(updates);
+    fireUpdate(mappedUpdates);
+  };
+
+  // Link and Fire Initial Update
+  initColumn(columnList);
 
   return {
     listen,
