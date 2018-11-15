@@ -20,22 +20,18 @@ export const updateAgGrid = (agGridApi, tableModelUpdate) => {
   });
 };
 
-const noValueChange = params => {
-  const newValue = parseFloat(params.newValue);
-  const oldValue = parseFloat(params.oldValue);
-  return newValue === oldValue;
-};
+const noValueChange = params => params.newValue === params.oldValue;
 
 export const updateTable = (table, agGridUpdate) => {
   const rowId = agGridUpdate.node.id;
   const cell = agGridUpdate.colDef.field;
-  const newValue = parseFloat(agGridUpdate.newValue);
+
   if(noValueChange(agGridUpdate))
     return;
 
   const update = {};
   update[rowId] = {};
-  update[rowId][cell] = newValue;
+  update[rowId][cell] = agGridUpdate.newValue;
 
   table.update(update);
 };
