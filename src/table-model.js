@@ -29,23 +29,66 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
   const rowsById = {};
 
   let cellIdCounter = 0;
-  _.each(rowDefs, (rowDef, rowIndex) => {
-    const { meta } = rowDef;
-    const { id } = meta;
-    const row = { meta };
 
-    const cells = _.mapValues(rowDef.cells, (formula, name) => {
-      const id = ++cellIdCounter;
-      const cell = Cell({ id, formula, data: { meta, rows, row, rowIndex, cellName: name, preLink: preLinkData }, helperFns: allHelpers });
+  const mapUpdates = updates => {
+    const mappedUpdates = {};
+    _.each(updates, (value, cellId) => {
+      const cell = cellMap[cellId];
+      const { data } = cell;
+      const rowId = data.meta.id;
+      const cellName = data.cellName;
 
-      cellMap[id] = cell;
-      return cell;
+      const rowUpdates = mappedUpdates[rowId] || {};
+      rowUpdates[cellName] = value;
+      mappedUpdates[rowId] = rowUpdates;
     });
 
-    Object.assign(row, cells);
-    rows.push(row);
-    rowsById[id] = row;
-  });
+    return mappedUpdates;
+  };
+
+  const addColumns = columnList => {
+    _.each(rowDefs, (rowDef, rowIndex) => {
+      const columns = columnList || Object.keys(rowDef.cells);
+      const { meta } = rowDef;
+      const { id } = meta;
+      let row = rows.find(row => row.meta.id === id);
+      if(!row) {
+        row = { meta };
+        rows.push(row);
+      }
+      columns.forEach(col => {
+        const { meta } = rowDef;
+        const formula = rowDef.cells[col];
+        const id = ++cellIdCounter;
+        const cell = Cell({ id, formula, data: { meta, rows, row, rowIndex, cellName: col, preLink: preLinkData }, helperFns: allHelpers });
+        cellMap[id] = cell;
+        row[col] = cell;
+      });
+      rowsById[id] = row;
+    });
+
+    // Pre-link stage
+    if(preLink) {
+      const plData = preLink(rows);
+      Object.assign(preLinkData, plData);
+    }
+
+    // Link and Fire Initial Update
+    const initTrx = Transaction({ init: true });
+    _.each(rows, row => {
+      const columns = columnList || Object.keys(row);
+      _.each(columns, column => {
+        const cell = row[column];
+        if(column === 'meta')
+          return;
+        if(cell)
+          cell.get(initTrx);
+      });
+    });
+    const { updates } = initTrx;
+    const mappedUpdates = mapUpdates(updates);
+    fireUpdate(mappedUpdates);
+  };
 
   const willAffect = data => {
     const errors = validate(data, rowsById);
@@ -85,22 +128,6 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
     return result;
   };
 
-  const mapUpdates = updates => {
-    const mappedUpdates = {};
-    _.each(updates, (value, cellId) => {
-      const cell = cellMap[cellId];
-      const { data } = cell;
-      const rowId = data.meta.id;
-      const cellName = data.cellName;
-
-      const rowUpdates = mappedUpdates[rowId] || {};
-      rowUpdates[cellName] = value;
-      mappedUpdates[rowId] = rowUpdates;
-    });
-
-    return mappedUpdates;
-  };
-
   // Update
   const update = data => {
     const errors = validate(data, rowsById);
@@ -134,39 +161,7 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
     fireUpdate(mappedUpdates);
   };
 
-  // Pre-link stage
-  if(preLink) {
-    const plData = preLink(rows);
-    Object.assign(preLinkData, plData);
-  }
-
-  const initColumn = columnList => {
-    const initTrx = Transaction({ init: true });
-    if(columnList && columnList.length > 0) {
-      _.each(rows, row => {
-        _.each(columnList, column => {
-          const cell = row[column];
-          if(cell)
-            cell.get(initTrx);
-        });
-      });
-    } else {
-      _.each(rows, row => {
-        _.each(row, (cell, cellName) => {
-          if(cellName === 'meta')
-            return;
-
-          cell.get(initTrx);
-        });
-      });
-    }
-    const { updates } = initTrx;
-    const mappedUpdates = mapUpdates(updates);
-    fireUpdate(mappedUpdates);
-  };
-
-  // Link and Fire Initial Update
-  initColumn(columnList);
+  addColumns(columnList);
 
   return {
     listen,
@@ -174,7 +169,7 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
     update,
     willAffect,
     preLinkData,
-    initColumn
+    addColumns
   };
 };
 
