@@ -285,6 +285,40 @@ describe('TableModel', () => {
   });
 });
 
+describe('TableModel add calculated column', () => {
+  beforeEach(() => {
+    const rowDefs = efficentRowDefs();
+
+    props.spy = sinon.spy();
+    props.tableModel = TableModel({ rowDefs, listener: props.spy, columnList: ['units', 'sales', 'asp'] });
+  });
+
+  it('should columns in list and should be able to add new column', () => {
+    const { spy, tableModel } = props;
+    tableModel.should.not.be.null();
+
+    spy.callCount.should.equal(1);
+    spy.getCall(0).args[0].should.deepEqual({
+      1: { units: 100, asp: 2, sales: 200 },
+      2: { units: 150, asp: 1.6666666666666667, sales: 250 },
+      3: { units: 1234, asp: 4.60129659643436, sales: 5678 }
+    });
+
+    tableModel.addColumns(['doubleAsp']);
+    spy.callCount.should.equal(2);
+    spy.getCall(1).args[0].should.deepEqual({
+      1: { units: 100, asp: 2, sales: 200, doubleAsp: 4 },
+      2: { units: 150, asp: 1.6666666666666667, sales: 250, doubleAsp: 3.3333333333333335 },
+      3: { units: 1234, asp: 4.60129659643436, sales: 5678, doubleAsp: 9.20259319286872 }
+    });
+
+    tableModel.rows[0].units.get().should.equal(100);
+    tableModel.rows[0].asp.get().should.equal(2);
+    tableModel.rows[0].sales.get().should.equal(200);
+    tableModel.rows[1].asp.get().should.be.approximately(1.6, 0.1);
+  });
+});
+
 function efficentRowDefs() {
   const cellsTemplate = {
     asp: {
