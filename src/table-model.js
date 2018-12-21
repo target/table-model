@@ -57,6 +57,8 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
         rows.push(row);
       }
       columns.forEach(col => {
+        if(row[col])
+          return;
         const { meta } = rowDef;
         const formula = rowDef.cells[col];
         const id = ++cellIdCounter;
