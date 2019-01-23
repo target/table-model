@@ -40,6 +40,14 @@ Note: The previous example is shorthand for the third method and is the same as 
 const areaCell = {
   get: d => d.row('width') * d.row('height');
 }
+```  
+  
+Somtimes you may want to reference what the previous value of the cell was.  
+Using `d.row('areaCell')` would cause infinitely recursing function calls so you can reference the old value like so:    
+```
+const areaCell = {
+  get: (d, oldValue) => // do something
+}
 ```
 
 ## 3. Getter/Setter Object
