@@ -45,7 +45,7 @@ const Cell = ({ id, formula, data, helperFns }) => {
 
     if(cellStack)
       cellStack.push(cell);
-    const value = model.getter(helpers);
+    const value = model.getter(helpers, model.value);
     if(cellStack)
       cellStack.pop();
 
