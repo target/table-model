@@ -181,4 +181,22 @@ describe('Cell', () => {
     cell.get().should.eql(50);
     data.testCells.alpha.get().should.eql(40);
   });
+
+  it('should return the previous value', () => {
+    const cell = Cell({ id: 'cell', formula: {
+      get: (d, oldValue) => oldValue || 0,
+      set: (d, value) => value
+    }, helperFns, data });
+
+    let trx = Transaction({ init: true });
+    cell.get(trx).should.eql(0);
+
+    trx = Transaction();
+    cell.set(10, trx);
+    cell.get().should.eql(10);
+
+    trx = Transaction();
+    cell.set(20, trx);
+    cell.get().should.eql(20);
+  });
 });
