@@ -1,3 +1,5 @@
+[![Build Status](https://www.travis-ci.org/target/table-model.svg?branch=master)](https://www.travis-ci.org/target/table-model)
+
 # TableModel - [Live Demo](https://target.github.io/table-model/)
 
 TableModel is an in-memory data model that automatically calculates your data based on provided equations.
