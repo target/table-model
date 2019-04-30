@@ -1,6 +1,6 @@
 {
   "name": "table-model",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "A library to manage and automate data and calculations",
   "keywords": ["table", "model", "data", "calculation", "formula", "aggrid"],
   "repository": "https://github.com/target/table-model",
@@ -40,6 +40,6 @@
     "source-map-support": "^0.5.3",
     "style-loader": "^0.21.0",
     "webpack": "^3.11.0",
-    "webpack-dev-server": "^2.11.2"
+    "webpack-dev-server": "^3.3.1"
   }
 }
