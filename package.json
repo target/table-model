@@ -1,6 +1,6 @@
 {
   "name": "table-model",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "A library to manage and automate data and calculations",
   "keywords": ["table", "model", "data", "calculation", "formula", "aggrid"],
   "repository": "https://github.com/target/table-model",
