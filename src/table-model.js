@@ -6,9 +6,12 @@ import Transaction from './transaction';
 import helperFns from './helper-functions';
 import validate from './validation';
 
+import { buildHelperFactory } from './utils';
+
 const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
   // Helpers
   const allHelpers = _.merge({}, helperFns, helpers || {});
+  const helperFactory = buildHelperFactory(allHelpers);
 
   // Listeners
   const listenerList = listener || [];
@@ -62,7 +65,7 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
         const { meta } = rowDef;
         const formula = rowDef.cells[col];
         const id = ++cellIdCounter;
-        const cell = Cell({ id, formula, data: { meta, rows, row, rowIndex, cellName: col, preLink: preLinkData }, helperFns: allHelpers });
+        const cell = Cell({ id, formula, data: { meta, rows, row, rowIndex, cellName: col, preLink: preLinkData }, helperFactory });
         cellMap[id] = cell;
         row[col] = cell;
       });
@@ -152,7 +155,7 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
         const cell = row[cellName];
 
         const trx = Transaction();
-        cell.set(value, trx);
+        cell.set(value, trx, true);
 
         // Records updates
         Object.assign(trxUpdates, trx.updates);
