@@ -4,12 +4,13 @@ import should from 'should';
 import Cell from './cell';
 import Transaction from './transaction';
 
+import { buildHelperFactory } from './utils';
+
 const helperFns = {
   cellHelpers: {
     row: input => {
-      const { testCells } = input;
-
       return cellNames => {
+        const { testCells } = input;
         let result;
         if(_.isArray(cellNames))
           result = cellNames.map(cellName => testCells[cellName]);
@@ -47,18 +48,20 @@ const helperFns = {
   }
 };
 
+const helperFactory = buildHelperFactory(helperFns);
+
 describe('Cell', () => {
   let data;
 
   beforeEach(() => {
     const testCells = _.mapValues({ alpha: 10, beta: 20, delta: 100, omega: 1234 }, (value, name) => {
-      return Cell({ id: name, formula: value, helperFns });
+      return Cell({ id: name, formula: value, helperFactory });
     });
     data = { testCells };
   });
 
   it('should support `value` formula', () => {
-    const cell = Cell({ id: 'cell', formula: 100, helperFns, data });
+    const cell = Cell({ id: 'cell', formula: 100, helperFactory, data });
 
     let trx = Transaction({ init: true });
     cell.get(trx).should.eql(100);
@@ -70,7 +73,7 @@ describe('Cell', () => {
   });
 
   it('should support complex `value` formulas', () => {
-    const cell = Cell({ id: 'cell', formula: { name: 'James', gold: 200 }, helperFns, data });
+    const cell = Cell({ id: 'cell', formula: { name: 'James', gold: 200 }, helperFactory, data });
 
     let trx = Transaction({ init: true });
     cell.get(trx).should.eql({ name: 'James', gold: 200 });
@@ -82,8 +85,8 @@ describe('Cell', () => {
   });
 
   it('should support `function` formula', () => {
-    const cell = Cell({ id: 'cell', formula: d => d.row('alpha') + d.row(['delta', 'omega']).reduce((x, y) => x + y, 0) + 10, helperFns, data });
-    const cell2 = Cell({ id: 'cell2', formula: d => d.row('alpha') * d.row('beta'), helperFns, data });
+    const cell = Cell({ id: 'cell', formula: d => d.row('alpha') + d.row(['delta', 'omega']).reduce((x, y) => x + y, 0) + 10, helperFactory, data });
+    const cell2 = Cell({ id: 'cell2', formula: d => d.row('alpha') * d.row('beta'), helperFactory, data });
 
     let trx = Transaction({ init: true });
     cell.get(trx).should.eql(1354);
@@ -122,7 +125,7 @@ describe('Cell', () => {
     const cell = Cell({ id: 'cell', formula: d => {
       count++;
       return d.row('alpha') + 10;
-    }, helperFns, data });
+    }, helperFactory, data });
 
     const trx = Transaction({ init: true });
     cell.get(trx).should.eql(20);
@@ -143,10 +146,10 @@ describe('Cell', () => {
       count++;
       return d.row('alpha') * 0;
     };
-    data.testCells.gamma = Cell({ id: 'gamma', formula, helperFns, data });
+    data.testCells.gamma = Cell({ id: 'gamma', formula, helperFactory, data });
     const cell = Cell({ id: 'cell', formula: d => {
       return d.row('gamma') + 10;
-    }, helperFns, data });
+    }, helperFactory, data });
 
     const trx = Transaction({ init: true });
     data.testCells.gamma.get(trx).should.eql(0);
@@ -165,7 +168,7 @@ describe('Cell', () => {
     const cell = Cell({ id: 'cell', formula: {
       get: d => d.row('alpha') + 10,
       set: (d, value) => d.set(value - 10, d.cells.row('alpha'))
-    }, helperFns, data });
+    }, helperFactory, data });
 
     let trx = Transaction({ init: true });
     cell.get(trx).should.eql(20);
@@ -186,7 +189,7 @@ describe('Cell', () => {
     const cell = Cell({ id: 'cell', formula: {
       get: (d, oldValue) => oldValue || 0,
       set: (d, value) => value
-    }, helperFns, data });
+    }, helperFactory, data });
 
     let trx = Transaction({ init: true });
     cell.get(trx).should.eql(0);

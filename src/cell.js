@@ -3,9 +3,7 @@ import _ from 'lodash';
 import Model from './model';
 import Transaction from './transaction';
 
-import { buildHelperFactory } from './utils';
-
-const Cell = ({ id, formula, data, helperFns }) => {
+const Cell = ({ id, formula, data, helperFactory }) => {
   const cell = {
     id,
     dependents: [],
@@ -14,10 +12,9 @@ const Cell = ({ id, formula, data, helperFns }) => {
   };
 
   const model = Model(formula);
-  const helperFactory = buildHelperFactory(helperFns, data);
 
   const get = (trx = {}) => {
-    const { cellStack, dryRun, init, stale, updates } = trx;
+    const { cellStack, dryRun, init, stale, updates, firstCell } = trx;
 
     // Add and link dependant
     if(init) {
@@ -41,7 +38,7 @@ const Cell = ({ id, formula, data, helperFns }) => {
     }
 
     // Update helpers with current trx
-    const helpers = helperFactory(trx);
+    const helpers = helperFactory(trx, data, firstCell);
 
     if(cellStack)
       cellStack.push(cell);
@@ -81,7 +78,7 @@ const Cell = ({ id, formula, data, helperFns }) => {
         return;
 
       // Update helpers with current trx
-      const helpers = helperFactory(trx);
+      const helpers = helperFactory(trx, data);
 
       // Placeholder
       updates[id] = true;

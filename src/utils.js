@@ -8,6 +8,7 @@ export const isSuperSet = (a, b) => {
 const mapCellHelperToValueHelper = (cellHelper, input) => {
   return (...args) => {
     const cells = cellHelper(...args);
+
     const { trx } = input;
 
     let result;
@@ -20,11 +21,11 @@ const mapCellHelperToValueHelper = (cellHelper, input) => {
   };
 };
 
-export const buildHelperFactory = (helperFns, data) => {
+export const buildHelperFactory = helperFns => {
   const { cellHelpers, otherHelpers } = helperFns;
 
   // Build input
-  const input = Object.assign({}, data);
+  const input = {};
 
   const boundCellHelpers = _.mapValues(cellHelpers, helperBuilder => helperBuilder(input));
   const boundOtherHelpers = _.mapValues(otherHelpers, helperBuilder => helperBuilder(input));
@@ -34,7 +35,8 @@ export const buildHelperFactory = (helperFns, data) => {
   const result = Object.assign({}, boundValueHelpers, boundOtherHelpers);
   result.cells = boundCellHelpers;
 
-  return trx => {
+  return (trx, data) => {
+    Object.assign(input, data);
     input.trx = trx;
     return result;
   };
