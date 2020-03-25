@@ -14,7 +14,7 @@ const Cell = ({ id, formula, data, helperFactory }) => {
   const model = Model(formula);
 
   const get = (trx = {}) => {
-    const { cellStack, dryRun, init, stale, updates, firstCell } = trx;
+    const { cellStack, dryRun, init, stale, updates } = trx;
 
     // Add and link dependant
     if(init) {
@@ -38,7 +38,7 @@ const Cell = ({ id, formula, data, helperFactory }) => {
     }
 
     // Update helpers with current trx
-    const helpers = helperFactory(trx, data, firstCell);
+    const helpers = helperFactory(trx);
 
     if(cellStack)
       cellStack.push(cell);
@@ -78,7 +78,7 @@ const Cell = ({ id, formula, data, helperFactory }) => {
         return;
 
       // Update helpers with current trx
-      const helpers = helperFactory(trx, data);
+      const helpers = helperFactory(trx);
 
       // Placeholder
       updates[id] = true;

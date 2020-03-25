@@ -61,6 +61,7 @@ describe('Cell', () => {
   });
 
   it('should support `value` formula', () => {
+    const helperFactory = buildHelperFactory(helperFns, data);
     const cell = Cell({ id: 'cell', formula: 100, helperFactory, data });
 
     let trx = Transaction({ init: true });
@@ -73,6 +74,7 @@ describe('Cell', () => {
   });
 
   it('should support complex `value` formulas', () => {
+    const helperFactory = buildHelperFactory(helperFns, data);
     const cell = Cell({ id: 'cell', formula: { name: 'James', gold: 200 }, helperFactory, data });
 
     let trx = Transaction({ init: true });
@@ -85,6 +87,7 @@ describe('Cell', () => {
   });
 
   it('should support `function` formula', () => {
+    const helperFactory = buildHelperFactory(helperFns, data);
     const cell = Cell({ id: 'cell', formula: d => d.row('alpha') + d.row(['delta', 'omega']).reduce((x, y) => x + y, 0) + 10, helperFactory, data });
     const cell2 = Cell({ id: 'cell2', formula: d => d.row('alpha') * d.row('beta'), helperFactory, data });
 
@@ -121,6 +124,7 @@ describe('Cell', () => {
 
   it('should only call a getter formula once per transaction', () => {
     let count = 0;
+    const helperFactory = buildHelperFactory(helperFns, data);
 
     const cell = Cell({ id: 'cell', formula: d => {
       count++;
@@ -141,6 +145,8 @@ describe('Cell', () => {
   });
 
   it('should only call a getter formula once per transaction when value 0', () => {
+    const helperFactory = buildHelperFactory(helperFns, data);
+
     let count = 0;
     const formula = d => {
       count++;
@@ -165,6 +171,7 @@ describe('Cell', () => {
   });
 
   it('should support `object` formula', () => {
+    const helperFactory = buildHelperFactory(helperFns, data);
     const cell = Cell({ id: 'cell', formula: {
       get: d => d.row('alpha') + 10,
       set: (d, value) => d.set(value - 10, d.cells.row('alpha'))
