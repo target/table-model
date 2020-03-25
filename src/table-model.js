@@ -11,7 +11,6 @@ import { buildHelperFactory } from './utils';
 const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
   // Helpers
   const allHelpers = _.merge({}, helperFns, helpers || {});
-  const helperFactory = buildHelperFactory(allHelpers);
 
   // Listeners
   const listenerList = listener || [];
@@ -59,13 +58,13 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
         row = { meta };
         rows.push(row);
       }
+      const helperFactory = buildHelperFactory(allHelpers, { meta, rows, row, rowIndex, preLink: preLinkData });
       columns.forEach(col => {
         if(row[col])
           return;
-        const { meta } = rowDef;
         const formula = rowDef.cells[col];
         const id = ++cellIdCounter;
-        const cell = Cell({ id, formula, data: { meta, rows, row, rowIndex, cellName: col, preLink: preLinkData }, helperFactory });
+        const cell = Cell({ id, formula, data: { meta, row, cellName: col }, helperFactory });
         cellMap[id] = cell;
         row[col] = cell;
       });
@@ -155,7 +154,7 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
         const cell = row[cellName];
 
         const trx = Transaction();
-        cell.set(value, trx, true);
+        cell.set(value, trx);
 
         // Records updates
         Object.assign(trxUpdates, trx.updates);
