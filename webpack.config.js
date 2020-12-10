@@ -6,7 +6,7 @@ module.exports = {
     filename: './dist/table-model.js',
     library: 'tableModel',
     libraryExport: 'default',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
   },
 
   module: {
@@ -14,18 +14,24 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'eslint-loader',
-        enforce: 'pre'
+        use: [
+          {
+            loader: 'eslint-loader',
+          },
+        ],
+        enforce: 'pre',
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: [
-          'babel-loader'
-        ]
+        use: [
+          {
+            loader: 'babel-loader',
+          },
+        ],
       },
-    ]
+    ],
   },
 
-  devtool: 'source-map'
+  devtool: 'source-map',
 };
