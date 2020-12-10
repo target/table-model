@@ -330,7 +330,7 @@ describe('TableModel add calculated column', () => {
     });
 
     tableModel.update({ 1: { units: 200 } });
-    tableModel.addColumns( ['doubleAsp', 'units'] );
+    tableModel.addColumns(['doubleAsp', 'units']);
     spy.callCount.should.equal(3);
 
     spy.getCall(2).args[0].should.deepEqual({
@@ -373,7 +373,7 @@ function efficentRowDefs() {
 
   const metaFields = ['id', 'style'];
   const rowDefs = data.map(row => {
-    const cells = Object.assign({}, cellsTemplate, row);
+    const cells = { ...cellsTemplate, ...row };
     return {
       meta: _.pick(row, metaFields),
       cells: _.omit(cells, metaFields)

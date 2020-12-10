@@ -17,7 +17,7 @@ const validate = (data, rowsById) => {
       }
 
       // VALIDATION: Check for update conflict
-      const dependents = cell.dependents;
+      const { dependents } = cell;
       dependents.forEach(cell => {
         const uRowId = cell.data.row.meta.id;
         const uRow = data[uRowId];
