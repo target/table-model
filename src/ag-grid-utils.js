@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 export const initAgGridData = (agGridApi, tableModelUpdate) => {
   const rowData = _.map(tableModelUpdate, (cells, rowId) => {
-    const gridRow = Object.assign({}, cells);
+    const gridRow = { ...cells };
     gridRow.id = parseInt(rowId, 10);
     return gridRow;
   });
@@ -14,7 +14,7 @@ export const updateAgGrid = (agGridApi, tableModelUpdate) => {
   _.each(tableModelUpdate, (rowUpdates, rowId) => {
     const node = agGridApi.getRowNode(rowId);
 
-    let data = node.data;
+    let { data } = node;
     data = Object.assign(data, rowUpdates);
     node.setData(data);
   });
@@ -42,7 +42,7 @@ export const buildHighlighter = tableModel => {
   const begin = params => {
     const rowId = params.data.id;
     const cellName = params.colDef.field;
-    const api = params.api;
+    const { api } = params;
 
     const update = {};
     update[rowId] = {};
@@ -55,7 +55,7 @@ export const buildHighlighter = tableModel => {
       const node = params.api.getRowNode(rowId);
 
       if(node) {
-        const data = node.data;
+        const { data } = node;
         data.affectedCells = affectedCells;
         rowNodes.push(node);
       }
@@ -65,7 +65,7 @@ export const buildHighlighter = tableModel => {
 
   const end = params => {
     const rowNodes = [];
-    const api = params.api;
+    const { api } = params;
     _.each(affectedRows, (affectedCells, rowId) => {
       const node = params.api.getRowNode(rowId);
       if(node) {

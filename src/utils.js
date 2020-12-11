@@ -24,14 +24,14 @@ export const buildHelperFactory = (helperFns, data) => {
   const { cellHelpers, otherHelpers } = helperFns;
 
   // Build input
-  const input = Object.assign({}, data);
+  const input = { ...data };
 
   const boundCellHelpers = _.mapValues(cellHelpers, helperBuilder => helperBuilder(input));
   const boundOtherHelpers = _.mapValues(otherHelpers, helperBuilder => helperBuilder(input));
 
   const boundValueHelpers = _.mapValues(boundCellHelpers, cellHelper => mapCellHelperToValueHelper(cellHelper, input));
 
-  const result = Object.assign({}, boundValueHelpers, boundOtherHelpers);
+  const result = { ...boundValueHelpers, ...boundOtherHelpers };
   result.cells = boundCellHelpers;
 
   return trx => {

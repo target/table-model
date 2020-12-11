@@ -13,22 +13,28 @@ module.exports = {
     rules: [
       {
         test: /\.s?css$/,
-          loaders: [
-          'style-loader',
-          'css-loader',
-          'sass-loader'
-        ]
+          use: [{
+            loader: 'style-loader'
+          }, {
+            loader: 'css-loader'
+          }, {
+            loader: 'sass-loader'
+          }]
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'eslint-loader',
+        use: [{
+          loader: 'eslint-loader'
+        }],
         enforce: 'pre'
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader'
+        use: [{
+          loader: 'babel-loader'
+        }]
       }
     ]
   },

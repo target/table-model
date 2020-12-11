@@ -152,6 +152,7 @@ describe('Cell', () => {
       count++;
       return d.row('alpha') * 0;
     };
+
     data.testCells.gamma = Cell({ id: 'gamma', formula, helperFactory, data });
     const cell = Cell({ id: 'cell', formula: d => {
       return d.row('gamma') + 10;

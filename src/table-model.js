@@ -38,7 +38,7 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
       const cell = cellMap[cellId];
       const { data } = cell;
       const rowId = data.meta.id;
-      const cellName = data.cellName;
+      const { cellName } = data;
 
       const rowUpdates = mappedUpdates[rowId] || {};
       rowUpdates[cellName] = value;
@@ -58,6 +58,7 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
         row = { meta };
         rows.push(row);
       }
+
       const helperFactory = buildHelperFactory(allHelpers, { meta, rows, row, rowIndex, preLink: preLinkData });
       columns.forEach(col => {
         if(row[col])
@@ -122,7 +123,7 @@ const TableModel = ({ rowDefs, helpers, listener, preLink, columnList }) => {
       const cell = cellMap[cellId];
 
       const rowId = cell.data.row.meta.id;
-      const cellName = cell.data.cellName;
+      const { cellName } = cell.data;
 
       const cellNames = result[rowId] || [];
       cellNames.push(cellName);
